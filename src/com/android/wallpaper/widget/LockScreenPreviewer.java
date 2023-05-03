@@ -19,9 +19,12 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import static android.view.View.MeasureSpec.makeMeasureSpec;
 
 import android.app.WallpaperColors;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.graphics.Point;
+import android.provider.Settings;
 import android.text.format.DateFormat;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -176,8 +179,13 @@ public class LockScreenPreviewer implements LifecycleObserver {
     }
 
     private void updateDateTime() {
+        ContentResolver resolver = mContext.getContentResolver();
+        String fontName = Settings.Secure.getString(resolver, Settings.Secure.KG_FONT_TYPE);
+        Typeface typeface = Typeface.create(fontName != null && !fontName.isEmpty() ? fontName : "google-sans-clock", Typeface.NORMAL);
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
         mLockDate.setText(DateFormat.format(mDatePattern, calendar));
+        mLockDate.setTypeface(typeface);
         mLockTime.setText(TimeUtils.getDoubleLineFormattedTime(mLockTime.getContext(), calendar));
+        mLockTime.setTypeface(typeface);
     }
 }
